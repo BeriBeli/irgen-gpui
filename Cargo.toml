@@ -1,0 +1,16 @@
+[workspace]
+members = [
+    "crates/irgen",
+    "crates/gui",
+]
+
+default-members = [
+    "crates/gui",
+]
+
+resolver = "3" # edition 2024
+
+[workspace.dependencies]
+gpui = { git = "https://github.com/zed-industries/zed.git" }
+anyhow = "1"
+thiserror = "1"
