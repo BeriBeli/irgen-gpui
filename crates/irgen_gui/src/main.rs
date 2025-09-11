@@ -66,6 +66,7 @@ impl Render for HelloWorld {
                         )
                         .child(
                             div()
+                                .id("file-upload")
                                 .w_full()
                                 .flex()
                                 .flex_col()
@@ -80,16 +81,17 @@ impl Render for HelloWorld {
                                 .border(px(1.0))
                                 .border_dashed()
                                 .border_color(rgb(0x93c5fd))
-                                // .hover(|this| this.bg(rgb(0xeff6ff)))
-                                // .hover(|this| this.text_color(rgb(0x2563eb)))
+                                .hover(|this| this.bg(rgb(0xeff6ff)).text_color(rgb(0x2563eb)))
                                 .cursor_pointer()
                                 .child(
                                     svg()
-                                        .path("excel.svg")
+                                        .path("assets/excel.svg")
                                         .w_12()
                                         .h_12()
                                         .text_color(rgb(0x3b82f6)),
-                                ),
+                                )
+                                .child("Click to select a spreadsheet")
+                                .on_click(|_, _, _| println!("Select a file!")),
                         )
                         .child(
                             div()
@@ -97,20 +99,22 @@ impl Render for HelloWorld {
                                 .grid_cols(1)
                                 .justify_center()
                                 .flex()
-                                .gap_20()
+                                .gap_32()
                                 .child(
                                     Button::new("button0")
-                                        .items_center()
                                         .primary()
+                                        .items_center()
                                         .label("export ipxact")
-                                        .on_click(|_, _, _| println!("Clicked!")),
+                                        .on_click(|_, _, _| println!("Exported ipxact!"))
+                                        .cursor_pointer(),
                                 )
                                 .child(
-                                    Button::new("button0")
-                                        .items_center()
+                                    Button::new("button1")
                                         .primary()
+                                        .items_center()
                                         .label("export regvue")
-                                        .on_click(|_, _, _| println!("Clicked!")),
+                                        .on_click(|_, _, _| println!("Exported regvue!"))
+                                        .cursor_pointer(),
                                 ),
                         ),
                 ),
@@ -120,7 +124,7 @@ impl Render for HelloWorld {
 
 fn main() {
     let app = Application::new().with_assets(Assets {
-        base: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets"),
+        base: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src"),
     });
 
     app.run(move |cx| {
