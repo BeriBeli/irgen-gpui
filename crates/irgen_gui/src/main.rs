@@ -124,7 +124,7 @@ impl Render for HelloWorld {
 
 fn main() {
     let app = Application::new().with_assets(Assets {
-        base: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src"),
+        base: PathBuf::from(env!("CARGO_MANIFEST_DIR")),
     });
 
     app.run(move |cx| {
