@@ -3,6 +3,7 @@ use crate::services::AppState;
 use gpui::*;
 use std::path::Path;
 use std::sync::Arc;
+use util::ResultExt;
 
 pub fn open<F>(state: Arc<AppState>, function: F, cx: &mut App)
 where
@@ -15,15 +16,18 @@ where
         prompt: None,
     });
 
-    cx.spawn(async move |_cx| match path.await {
-        Ok(path) => {
-            let path = &path.ok().unwrap().unwrap()[0];
-            if let Err(err) = function(path, state) {
-                eprintln!("Open error: {:?}", err);
+    cx.spawn(
+        async move |_cx| match path.await.anyhow().and_then(|res| res) {
+            Ok(Some(path)) => {
+                let path = &path[0];
+                if let Err(err) = function(path, state) {
+                    eprintln!("Open error: {:?}", err);
+                }
             }
-        }
-        Err(_err) => {}
-    })
+            Ok(None) => {}
+            Err(_err) => {}
+        },
+    )
     .detach();
 }
 
