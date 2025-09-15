@@ -35,16 +35,26 @@ pub fn save<F>(state: Arc<AppState>, function: F, cx: &mut App)
 where
     F: Fn(&Path, Arc<AppState>) -> anyhow::Result<(), Error> + 'static,
 {
-    let path = cx.prompt_for_new_path(Path::new("./"), None);
+    let guard = state.directory.lock().unwrap();
+    let directory = guard
+        .as_ref()
+        .map(|p| p.as_path())
+        .unwrap_or(Path::new("."));
+    let path = cx.prompt_for_new_path(directory, None);
 
-    cx.spawn(async move |_cx| match path.await {
-        Ok(path) => {
-            let path = &path.ok().unwrap().unwrap();
-            if let Err(err) = function(path, state) {
-                eprintln!("Open error: {:?}", err);
+    let state = state.clone();
+
+    cx.spawn(
+        async move |_cx| match path.await.anyhow().and_then(|res| res) {
+            Ok(Some(path)) => {
+                let path = &path;
+                if let Err(err) = function(path, state) {
+                    eprintln!("Open error: {:?}", err);
+                }
             }
-        }
-        Err(_err) => {}
-    })
+            Ok(None) => {}
+            Err(_err) => {}
+        },
+    )
     .detach();
 }

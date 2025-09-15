@@ -69,22 +69,6 @@ pub fn parse_register(df: DataFrame) -> anyhow::Result<DataFrame, Error> {
                 .extract(lit(r"(?:\d+:)?(\d+)"), 1)
                 .alias("BIT_OFFSET"),
         ])
-        .with_columns(&[
-            col("ARGS")
-                .list()
-                .get(lit(0), true)
-                .cast(DataType::UInt32)
-                .alias("start"),
-            col("ARGS")
-                .list()
-                .get(lit(1), true)
-                .cast(DataType::UInt32)
-                .alias("end"),
-            when(col("ARGS").list().len().eq(lit(3)))
-                .then(col("ARGS").list().get(lit(2), true).cast(DataType::UInt32))
-                .otherwise(lit(Null {}))
-                .alias("step"),
-        ])
         .with_column(
             when(col("ARGS").list().len().eq(lit(3)))
                 .then(int_ranges(
@@ -147,7 +131,17 @@ pub fn parse_register(df: DataFrame) -> anyhow::Result<DataFrame, Error> {
                 .then(
                     col("BASE_REG").cast(DataType::String)
                         + lit("_")
-                        + col("N_SERIES").cast(DataType::String),
+                        + (col("N_SERIES")
+                            .rank(
+                                RankOptions {
+                                    method: RankMethod::Dense,
+                                    descending: false,
+                                },
+                                None,
+                            )
+                            .over([col("BASE_REG")])
+                            - lit(1))
+                        .cast(DataType::String),
                 )
                 .otherwise(col("REG"))
                 .alias("REG"),
@@ -167,8 +161,6 @@ pub fn parse_register(df: DataFrame) -> anyhow::Result<DataFrame, Error> {
             col("DESCRIPTION"),
             // col("BASE_REG"),
             // col("IS_EXPANDABLE"),
-            // col("START"),
-            // col("END"),
             // col("BASE_ADDR"),
             col("N_SERIES"),
         ])

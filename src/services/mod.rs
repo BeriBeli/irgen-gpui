@@ -5,7 +5,7 @@ mod schema;
 use crate::error::Error;
 use std::collections::HashMap;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
 use calamine::{Reader, Xlsx, open_workbook};
@@ -17,18 +17,21 @@ use schema::base::{df_to_blks, df_to_compo, df_to_regs};
 pub use schema::{base, ipxact, regvue};
 
 pub struct AppState {
-    component: Mutex<Option<base::Component>>,
+    pub component: Mutex<Option<base::Component>>,
+    pub directory: Mutex<Option<PathBuf>>,
 }
 
 impl AppState {
     pub fn new() -> Self {
         Self {
             component: Mutex::new(None),
+            directory: Mutex::new(None),
         }
     }
 }
 
 pub fn load_excel(input: &Path, state: Arc<AppState>) -> anyhow::Result<(), Error> {
+    let directory = input.parent().unwrap().to_path_buf();
     let mut wb: Xlsx<_> = open_workbook(input)?;
 
     let sheets = wb.worksheets();
@@ -59,6 +62,7 @@ pub fn load_excel(input: &Path, state: Arc<AppState>) -> anyhow::Result<(), Erro
         })?
     };
     *state.component.lock().unwrap() = Some(compo);
+    *state.directory.lock().unwrap() = Some(directory);
     Ok(())
 }
 
