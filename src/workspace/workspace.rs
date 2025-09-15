@@ -5,6 +5,7 @@ use crate::services::{export_ipxact_xml, export_regvue_json, load_excel};
 use crate::state::AppState;
 use gpui::prelude::*;
 use gpui::*;
+use gpui_component::Disableable;
 use std::sync::Arc;
 
 use gpui_component::{
@@ -65,7 +66,7 @@ impl Render for Workspace {
                         .rounded_xl()
                         .shadow_lg()
                         .p_8()
-                        .child(div().text_3xl().text_center().mb_8().child("irgen"))
+                        .child(div().text_2xl().text_center().mb_6().child("irgen"))
                         .child(
                             div()
                                 .id("file-upload")
@@ -74,8 +75,8 @@ impl Render for Workspace {
                                 .flex_col()
                                 .items_center()
                                 .px_4()
-                                .py_10()
-                                .mb_12()
+                                .py_8()
+                                .mb_8()
                                 .bg(gpui::white())
                                 .text_color(rgb(0x3b82f6))
                                 .rounded_lg()
@@ -108,12 +109,14 @@ impl Render for Workspace {
                                 .grid_cols(1)
                                 .justify_center()
                                 .flex()
-                                .gap_32()
+                                .gap_12()
                                 .child(
                                     Button::new("button0")
                                         .primary()
+                                        .w_56()
                                         .items_center()
                                         .label("export ipxact")
+                                        .disabled(!is_selected)
                                         .on_click({
                                             let app_state = app_state.clone();
                                             move |_, _, app| {
@@ -125,8 +128,10 @@ impl Render for Workspace {
                                 .child(
                                     Button::new("button1")
                                         .primary()
+                                        .w_56()
                                         .items_center()
                                         .label("export regvue")
+                                        .disabled(!is_selected)
                                         .on_click({
                                             let app_state = app_state.clone();
                                             move |_, _, app| {
