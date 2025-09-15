@@ -1,5 +1,5 @@
 use crate::error::Error;
-use crate::services::AppState;
+use crate::state::AppState;
 use gpui::*;
 use std::path::Path;
 use std::sync::Arc;
@@ -20,6 +20,8 @@ where
         async move |_cx| match path.await.anyhow().and_then(|res| res) {
             Ok(Some(path)) => {
                 let path = &path[0];
+                *state.selected_file.lock().unwrap() = Some(path.to_path_buf());
+                *state.is_selected.lock().unwrap() = Some(true);
                 if let Err(err) = function(path, state) {
                     eprintln!("Open error: {:?}", err);
                 }

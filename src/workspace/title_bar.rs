@@ -10,9 +10,9 @@ use crate::themes::*;
 
 const TITLE_BAR_LEFT_PADDING: Pixels = px(80.);
 
-pub struct HeaderBar {}
+pub struct TitleBar {}
 
-impl HeaderBar {
+impl TitleBar {
     pub fn new(_window: &mut Window, _cx: &mut Context<Self>) -> Self {
         Self {}
     }
@@ -30,7 +30,7 @@ impl HeaderBar {
     }
 }
 
-impl Render for HeaderBar {
+impl Render for TitleBar {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let theme_toggle = Button::new("theme-mode")
             .map(|this| {
@@ -51,7 +51,7 @@ impl Render for HeaderBar {
             .on_click(|_, _, cx| cx.open_url("https://github.com/BeriBeli/irgen-gpui"));
 
         div()
-            .id("header-bar")
+            .id("title-bar")
             .border_b_1()
             .bg(cx.theme().title_bar)
             .border_color(cx.theme().border)

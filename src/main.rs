@@ -1,6 +1,7 @@
 mod assets;
 mod error;
 mod services;
+mod state;
 mod themes;
 mod window;
 mod workspace;

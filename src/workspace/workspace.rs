@@ -1,7 +1,9 @@
 use super::action::{open, save};
-use super::header_bar::HeaderBar;
+use super::title_bar::TitleBar;
 
-use crate::services::*;
+use crate::services::{export_ipxact_xml, export_regvue_json, load_excel};
+use crate::state::AppState;
+use gpui::prelude::*;
 use gpui::*;
 use std::sync::Arc;
 
@@ -11,16 +13,16 @@ use gpui_component::{
 };
 
 pub struct Workspace {
-    header_bar: Entity<HeaderBar>,
+    title_bar: Entity<TitleBar>,
     app_state: Arc<AppState>,
 }
 
 impl Workspace {
     pub fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
-        let header_bar = HeaderBar::view(window, cx);
+        let title_bar = TitleBar::view(window, cx);
 
         Self {
-            header_bar,
+            title_bar,
             app_state: Arc::new(AppState::new()),
         }
     }
@@ -33,6 +35,20 @@ impl Workspace {
 impl Render for Workspace {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let app_state = self.app_state.clone();
+        let is_selected = app_state
+            .is_selected
+            .lock()
+            .unwrap()
+            .as_ref()
+            .unwrap_or(&false)
+            .to_owned();
+        let selected_path = app_state
+            .selected_file
+            .lock()
+            .unwrap()
+            .as_deref()
+            .map(|p| p.to_string_lossy().into_owned())
+            .unwrap_or_else(|| String::new());
         let main = div()
             .id("workspace-main")
             .bg(cx.theme().background)
@@ -76,7 +92,11 @@ impl Render for Workspace {
                                         .h_12()
                                         .text_color(rgb(0x3b82f6)),
                                 )
-                                .child("Click to select a spreadsheet")
+                                .when_else(
+                                    is_selected,
+                                    |this| this.child(selected_path),
+                                    |this| this.child("Click to select a spreadsheet"),
+                                )
                                 .on_click({
                                     let app_state = app_state.clone();
                                     move |_, _, app| open(app_state.clone(), load_excel, app)
@@ -130,7 +150,7 @@ impl Render for Workspace {
             .flex()
             .flex_col()
             .size_full()
-            .child(self.header_bar.clone())
+            .child(self.title_bar.clone())
             .child(content)
     }
 }
