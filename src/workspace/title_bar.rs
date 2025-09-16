@@ -1,20 +1,31 @@
+#[cfg(target_os = "windows")]
+use super::platform::platform_win::WindowsWindowControls;
 use gpui::prelude::FluentBuilder as _;
 use gpui::*;
+use gpui_component::label::Label;
 use gpui_component::{
     ActiveTheme as _, IconName, Sizable as _, ThemeMode,
     button::{Button, ButtonVariants as _},
-    label::Label,
 };
 
 use crate::themes::*;
 
+#[cfg(target_os = "macos")]
 const TITLE_BAR_LEFT_PADDING: Pixels = px(80.);
+#[cfg(target_os = "windows")]
+const TITLE_BAR_LEFT_PADDING: Pixels = px(5.);
 
-pub struct TitleBar {}
+pub struct TitleBar {
+    #[cfg(target_os = "windows")]
+    controls: Entity<WindowsWindowControls>,
+}
 
 impl TitleBar {
-    pub fn new(_window: &mut Window, _cx: &mut Context<Self>) -> Self {
-        Self {}
+    pub fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
+        Self {
+            #[cfg(target_os = "windows")]
+            controls: WindowsWindowControls::view(window, cx),
+        }
     }
     pub fn view(window: &mut Window, cx: &mut App) -> Entity<Self> {
         cx.new(|cx| Self::new(window, cx))
@@ -50,27 +61,58 @@ impl Render for TitleBar {
             .ghost()
             .on_click(|_, _, cx| cx.open_url("https://github.com/BeriBeli/irgen-gpui"));
 
-        div()
-            .id("title-bar")
-            .border_b_1()
-            .bg(cx.theme().title_bar)
-            .border_color(cx.theme().border)
-            .pl(TITLE_BAR_LEFT_PADDING)
-            .child(
-                div()
-                    .flex()
-                    .justify_between()
-                    .items_center()
-                    .p_1()
-                    .child(Label::new("irgen").text_xs())
-                    .child(
-                        div()
-                            .pr(px(5.0))
-                            .flex()
-                            .items_center()
-                            .child(theme_toggle)
-                            .child(github_button),
-                    ),
-            )
+        #[cfg(target_os = "macos")]
+        {
+            div()
+                .id("title-bar")
+                .border_b_1()
+                .bg(cx.theme().title_bar)
+                .border_color(cx.theme().border)
+                .pl(TITLE_BAR_LEFT_PADDING)
+                .child(
+                    div()
+                        .flex()
+                        .justify_between()
+                        .items_center()
+                        .p_1()
+                        .child(Label::new("irgen").text_xs())
+                        .child(
+                            div()
+                                .pr(px(5.0))
+                                .flex()
+                                .items_center()
+                                .child(theme_toggle)
+                                .child(github_button),
+                        ),
+                )
+        }
+        #[cfg(target_os = "windows")]
+        {
+            div()
+                .id("title-bar")
+                .flex()
+                .justify_between()
+                .border_b_1()
+                .bg(cx.theme().title_bar)
+                .border_color(cx.theme().border)
+                .pl(TITLE_BAR_LEFT_PADDING)
+                .child(
+                    div()
+                        .flex()
+                        .items_center()
+                        .p_1()
+                        .child(Label::new("irgen").text_xs())
+                        .map(|this| this.window_control_area(WindowControlArea::Drag)),
+                )
+                .child(
+                    div()
+                        .pr(px(5.0))
+                        .flex()
+                        .items_center()
+                        .child(theme_toggle)
+                        .child(github_button)
+                        .child(self.controls.clone()),
+                )
+        }
     }
 }
