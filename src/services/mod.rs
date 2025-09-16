@@ -12,7 +12,7 @@ use calamine::{Reader, Xlsx, open_workbook};
 use polars::prelude::DataFrame;
 
 use crate::state::AppState;
-use excel::ToDataFrame;
+use excel::ToDataFrame as _;
 use parser::parse_register;
 use schema::base::{df_to_blks, df_to_compo, df_to_regs};
 pub use schema::{base, ipxact, regvue};

@@ -1,7 +1,7 @@
-use gpui::{prelude::FluentBuilder, *};
+use gpui::{prelude::FluentBuilder as _, *};
 use gpui_component::{
-    IconName, Sizable,
-    button::{Button, ButtonVariants},
+    IconName, Sizable as _,
+    button::{Button, ButtonVariants as _},
 };
 
 pub struct WindowsWindowControls;

@@ -5,7 +5,7 @@ use std::path::Path;
 use std::sync::Arc;
 use util::ResultExt;
 
-pub fn open<F>(state: Arc<AppState>, function: F, cx: &mut App)
+pub fn open<F>(state: Arc<AppState>, function: F, cx: &mut App) -> anyhow::Result<(), Error>
 where
     F: Fn(&Path, Arc<AppState>) -> anyhow::Result<(), Error> + 'static,
 {
@@ -16,24 +16,24 @@ where
         prompt: None,
     });
 
-    cx.spawn(
-        async move |_cx| match path.await.anyhow().and_then(|res| res) {
+    cx.spawn(async move |_cx| -> anyhow::Result<(), Error> {
+        match path.await.anyhow().and_then(|res| res) {
             Ok(Some(path)) => {
                 let path = &path[0];
                 *state.selected_file.lock().unwrap() = Some(path.to_path_buf());
                 *state.is_selected.lock().unwrap() = Some(true);
-                if let Err(err) = function(path, state) {
-                    eprintln!("Open error: {:?}", err);
-                }
+                function(path, state)?;
+                Ok(())
             }
-            Ok(None) => {}
-            Err(_err) => {}
-        },
-    )
+            Ok(None) => Ok(()),
+            Err(err) => Err(err.into()),
+        }
+    })
     .detach();
+    Ok(())
 }
 
-pub fn save<F>(state: Arc<AppState>, function: F, cx: &mut App)
+pub fn save<F>(state: Arc<AppState>, function: F, cx: &mut App) -> anyhow::Result<(), Error>
 where
     F: Fn(&Path, Arc<AppState>) -> anyhow::Result<(), Error> + 'static,
 {
@@ -46,17 +46,17 @@ where
 
     let state = state.clone();
 
-    cx.spawn(
-        async move |_cx| match path.await.anyhow().and_then(|res| res) {
+    cx.spawn(async move |_cx| -> anyhow::Result<(), Error> {
+        match path.await.anyhow().and_then(|res| res) {
             Ok(Some(path)) => {
                 let path = &path;
-                if let Err(err) = function(path, state) {
-                    eprintln!("Open error: {:?}", err);
-                }
+                function(path, state)?;
+                Ok(())
             }
-            Ok(None) => {}
-            Err(_err) => {}
-        },
-    )
+            Ok(None) => Ok(()),
+            Err(err) => Err(err.into()),
+        }
+    })
     .detach();
+    Ok(())
 }

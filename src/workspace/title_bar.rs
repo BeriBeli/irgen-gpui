@@ -4,7 +4,8 @@ use gpui::prelude::FluentBuilder as _;
 use gpui::*;
 use gpui_component::label::Label;
 use gpui_component::{
-    ActiveTheme as _, IconName, Sizable as _, ThemeMode,
+    ActiveTheme as _, ContextModal as _, IconName, Sizable as _, ThemeMode,
+    badge::Badge,
     button::{Button, ButtonVariants as _},
 };
 
@@ -42,7 +43,8 @@ impl TitleBar {
 }
 
 impl Render for TitleBar {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let notifications_count = window.notifications(cx).len();
         let theme_toggle = Button::new("theme-mode")
             .map(|this| {
                 if cx.theme().mode.is_dark() {
@@ -60,6 +62,14 @@ impl Render for TitleBar {
             .small()
             .ghost()
             .on_click(|_, _, cx| cx.open_url("https://github.com/BeriBeli/irgen-gpui"));
+
+        let notification_button = Badge::new().count(notifications_count).max(99).child(
+            Button::new("bell")
+                .small()
+                .ghost()
+                .compact()
+                .icon(IconName::Bell),
+        );
 
         #[cfg(target_os = "macos")]
         {
@@ -116,6 +126,7 @@ impl Render for TitleBar {
                         .items_center()
                         .child(theme_toggle)
                         .child(github_button)
+                        .child(notification_button)
                         .child(self.controls.clone()),
                 )
         }
