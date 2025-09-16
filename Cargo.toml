@@ -17,3 +17,6 @@ quick-xml = { version = "0.38.1", features = ["serialize"] }
 derive_builder = "0.20.2"
 regex = "1.11.1"
 rust-embed = "8.7.2"
+
+[target.'cfg(target_os = "windows")'.build-dependencies]
+winresource = "0.1"
