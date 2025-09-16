@@ -22,11 +22,15 @@ pub struct TitleBar {
 }
 
 impl TitleBar {
+    #[cfg(target_os = "windows")]
     pub fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
         Self {
-            #[cfg(target_os = "windows")]
             controls: WindowsWindowControls::view(window, cx),
         }
+    }
+    #[cfg(target_os = "macos")]
+    pub fn new(_window: &mut Window, _cx: &mut Context<Self>) -> Self {
+        Self {}
     }
     pub fn view(window: &mut Window, cx: &mut App) -> Entity<Self> {
         cx.new(|cx| Self::new(window, cx))
@@ -92,7 +96,8 @@ impl Render for TitleBar {
                                 .flex()
                                 .items_center()
                                 .child(theme_toggle)
-                                .child(github_button),
+                                .child(github_button)
+                                .child(notification_button),
                         ),
                 )
         }

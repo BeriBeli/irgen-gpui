@@ -5,7 +5,7 @@ use crate::services::{export_ipxact_xml, export_regvue_json, load_excel};
 use crate::state::AppState;
 use gpui::prelude::*;
 use gpui::*;
-use gpui_component::Disableable as _;
+use gpui_component::{Disableable as _, Root};
 use std::sync::Arc;
 
 use gpui_component::{
@@ -35,7 +35,8 @@ impl Workspace {
 }
 
 impl Render for Workspace {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let notification_layer = Root::render_notification_layer(window, cx);
         let app_state = self.app_state.clone();
         let is_selected = app_state
             .is_selected
@@ -199,5 +200,6 @@ impl Render for Workspace {
             .size_full()
             .child(self.title_bar.clone())
             .child(content)
+            .children(notification_layer)
     }
 }
