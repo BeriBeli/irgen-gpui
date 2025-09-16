@@ -8,6 +8,7 @@ irgen (IP-XACT Register Generator) is a tool that converts structured Excel docu
 >
 > 1. ***All hexadecimal numbers must be prefixed with 0x; decimal numbers must have no prefix.***
 > 2. ***range(start?, end, step?) is the syntax for expressing lists, similar to Python’s range() function. It supports range(start, end), range(end), and range(start, end, step). For example, to generate 10 registers incrementing by 0x10, write range(0, 40, 4).***
+> 3. ***see example.xlsx as an example***
 
 1. Version/Vendor sheet (sheet name: `version`)
 
