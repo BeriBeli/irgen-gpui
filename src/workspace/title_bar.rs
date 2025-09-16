@@ -106,6 +106,11 @@ impl Render for TitleBar {
                 )
                 .child(
                     div()
+                        .flex_grow()
+                        .map(|this| this.window_control_area(WindowControlArea::Drag)),
+                )
+                .child(
+                    div()
                         .pr(px(5.0))
                         .flex()
                         .items_center()
