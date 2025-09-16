@@ -3,6 +3,7 @@ use super::platform::platform_win::WindowsWindowControls;
 use gpui::prelude::FluentBuilder as _;
 use gpui::*;
 use gpui_component::label::Label;
+// use gpui_component::notification::NotificationType;
 use gpui_component::{
     ActiveTheme as _, ContextModal as _, IconName, Sizable as _, ThemeMode,
     badge::Badge,
@@ -36,13 +37,19 @@ impl TitleBar {
         cx.new(|cx| Self::new(window, cx))
     }
     pub fn change_mode(&mut self, _: &ClickEvent, window: &mut Window, cx: &mut Context<Self>) {
-        println!("Current mode: {:?}", cx.theme().mode);
         let new_mode = if cx.theme().mode.is_dark() {
             ThemeMode::Light
         } else {
             ThemeMode::Dark
         };
         change_color_mode(new_mode, window, cx);
+        // window.push_notification(
+        //     (
+        //         NotificationType::Success,
+        //         SharedString::from(format!("Changed mode: {:?}", cx.theme().mode)),
+        //     ),
+        //     cx,
+        // );
     }
 }
 
