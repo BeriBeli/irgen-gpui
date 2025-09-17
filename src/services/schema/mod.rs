@@ -5,7 +5,7 @@ pub mod regvue;
 
 use std::collections::HashMap;
 
-use regex::Regex;
+// use regex::Regex;
 
 use super::schema::attr::{
     extract_access_value, extract_modified_write_value, extract_read_action_value,
@@ -15,7 +15,8 @@ use crate::error::Error;
 impl TryFrom<&base::Component> for ipxact::Component {
     type Error = Error;
     fn try_from(base: &base::Component) -> anyhow::Result<Self, Error> {
-        let re = Regex::new(r"^(rsvd|reserved)\d*$")?;
+        // not considering removing reserved registers (some reserved's access is rw)
+        // let re = Regex::new(r"^(rsvd|reserved)\d*$")?;
 
         let memory_maps = ipxact::MemoryMapsBuilder::default()
             .memory_map(vec![
@@ -34,9 +35,11 @@ impl TryFrom<&base::Component> for ipxact::Component {
                                         .address_offset(reg.offset())
                                         .size(reg.size())
                                         // use iterator to get the array of fields
-                                        .field(reg.fields().iter().filter(|field| {
-                                            !re.is_match(field.name())
-                                        }).map(|field| -> anyhow::Result<ipxact::Field, Error> {
+                                        .field(reg.fields().iter()
+                                            // .filter(|field| {
+                                            //     !re.is_match(field.name())
+                                            // })
+                                            .map(|field| -> anyhow::Result<ipxact::Field, Error> {
                                                 Ok(ipxact::FieldBuilder::default()
                                                     .name(field.name())
                                                     .bit_offset(field.offset())

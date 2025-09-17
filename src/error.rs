@@ -80,9 +80,8 @@ pub enum Error {
     #[error("Regvue Document error: {0}")]
     RegvueDocument(#[from] regvue::DocumentBuilderError),
 
-    #[error("Regex error: {0}")]
-    Regex(#[from] regex::Error),
-
+    // #[error("Regex error: {0}")]
+    // Regex(#[from] regex::Error),
     #[error("ParserInt error: {0}")]
     ParseInt(#[from] std::num::ParseIntError),
 }

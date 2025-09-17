@@ -1,7 +1,14 @@
 [package]
 name = "irgen-gpui"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
+
+[profile.release]
+opt-level = "z"
+debug = false
+lto = true
+codegen-units = 1
+panic = "abort"
 
 [dependencies]
 gpui = { git = "https://github.com/zed-industries/zed.git" }
@@ -15,7 +22,7 @@ thiserror = "2.0.12"
 serde_json = "1.0.141"
 quick-xml = { version = "0.38.1", features = ["serialize"] }
 derive_builder = "0.20.2"
-regex = "1.11.1"
+# regex = "1.11.1"
 rust-embed = "8.7.2"
 
 [target.'cfg(target_os = "windows")'.build-dependencies]

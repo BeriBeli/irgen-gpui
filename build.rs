@@ -38,7 +38,7 @@ fn main() {
 
         // Optional: uncomment to set version or copyright
         // res.set("FileVersion", "1.0.0.0");
-        // res.set("LegalCopyright", "© 2025 Your Name");
+        res.set("LegalCopyright", "© 2025 BeriBeli");
 
         if let Err(e) = res.compile() {
             eprintln!("Error compiling Windows resource: {}", e);
