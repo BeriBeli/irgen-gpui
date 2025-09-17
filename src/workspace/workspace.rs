@@ -9,9 +9,8 @@ use gpui_component::{Disableable as _, Root};
 use std::sync::Arc;
 
 use gpui_component::{
-    ActiveTheme as _, ContextModal as _,
+    ActiveTheme as _,
     button::{Button, ButtonVariants as _},
-    notification::NotificationType,
 };
 
 pub struct Workspace {
@@ -102,21 +101,8 @@ impl Render for Workspace {
                                 )
                                 .on_click({
                                     let app_state = app_state.clone();
-                                    move |_, window, cx| match open(
-                                        app_state.clone(),
-                                        load_excel,
-                                        cx,
-                                    ) {
-                                        Ok(_) => {}
-                                        Err(err) => {
-                                            window.push_notification(
-                                                (
-                                                    NotificationType::Error,
-                                                    SharedString::from(err.to_string()),
-                                                ),
-                                                cx,
-                                            );
-                                        }
+                                    move |_, window, cx| {
+                                        open(app_state.clone(), load_excel, window, cx)
                                     }
                                 }),
                         )
@@ -136,21 +122,13 @@ impl Render for Workspace {
                                         .disabled(!is_selected)
                                         .on_click({
                                             let app_state = app_state.clone();
-                                            move |_, window, cx| match save(
-                                                app_state.clone(),
-                                                export_ipxact_xml,
-                                                cx,
-                                            ) {
-                                                Ok(_) => {}
-                                                Err(err) => {
-                                                    window.push_notification(
-                                                        (
-                                                            NotificationType::Error,
-                                                            SharedString::from(err.to_string()),
-                                                        ),
-                                                        cx,
-                                                    );
-                                                }
+                                            move |_, window, cx| {
+                                                save(
+                                                    app_state.clone(),
+                                                    export_ipxact_xml,
+                                                    window,
+                                                    cx,
+                                                )
                                             }
                                         })
                                         .cursor_pointer(),
@@ -164,21 +142,13 @@ impl Render for Workspace {
                                         .disabled(!is_selected)
                                         .on_click({
                                             let app_state = app_state.clone();
-                                            move |_, window, cx| match save(
-                                                app_state.clone(),
-                                                export_regvue_json,
-                                                cx,
-                                            ) {
-                                                Ok(_) => {}
-                                                Err(err) => {
-                                                    window.push_notification(
-                                                        (
-                                                            NotificationType::Error,
-                                                            SharedString::from(err.to_string()),
-                                                        ),
-                                                        cx,
-                                                    );
-                                                }
+                                            move |_, window, cx| {
+                                                save(
+                                                    app_state.clone(),
+                                                    export_regvue_json,
+                                                    window,
+                                                    cx,
+                                                )
                                             }
                                         })
                                         .cursor_pointer(),
