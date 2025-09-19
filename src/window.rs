@@ -2,7 +2,7 @@ use gpui::*;
 use gpui_component::TitleBar;
 
 pub fn get_window_options(cx: &mut App) -> WindowOptions {
-    let mut window_size = size(px(600.0), px(480.0));
+    let mut window_size = size(px(1920.0), px(1080.0));
     if let Some(display) = cx.primary_display() {
         let display_size = display.bounds().size;
         window_size.width = window_size.width.min(display_size.width * 0.85);

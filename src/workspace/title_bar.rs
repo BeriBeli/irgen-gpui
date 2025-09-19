@@ -12,10 +12,8 @@ use gpui_component::{
 
 use crate::themes::*;
 
-#[cfg(target_os = "macos")]
-const TITLE_BAR_LEFT_PADDING: Pixels = px(80.);
-#[cfg(target_os = "windows")]
-const TITLE_BAR_LEFT_PADDING: Pixels = px(5.);
+const TITLE_BAR_LEFT_PADDING_FULLSCREEN: Pixels = px(5.);
+const TITLE_BAR_LEFT_PADDING_NORMAL: Pixels = px(80.);
 
 pub struct TitleBar {
     #[cfg(target_os = "windows")]
@@ -89,7 +87,11 @@ impl Render for TitleBar {
                 .border_b_1()
                 .bg(cx.theme().title_bar)
                 .border_color(cx.theme().border)
-                .pl(TITLE_BAR_LEFT_PADDING)
+                .when_else(
+                    window.is_fullscreen(),
+                    |this| this.pl(TITLE_BAR_LEFT_PADDING_FULLSCREEN),
+                    |this| this.pl(TITLE_BAR_LEFT_PADDING_NORMAL),
+                )
                 .child(
                     div()
                         .flex()
@@ -117,7 +119,7 @@ impl Render for TitleBar {
                 .border_b_1()
                 .bg(cx.theme().title_bar)
                 .border_color(cx.theme().border)
-                .pl(TITLE_BAR_LEFT_PADDING)
+                .pl(TITLE_BAR_LEFT_PADDING_FULLSCREEN)
                 .child(
                     div()
                         .flex()
